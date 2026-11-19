@@ -16,16 +16,13 @@
   </header>
   <main>
     <nav class="chapters" aria-label="Les étapes de l’exposé"></nav>
-    <section id="plate-picker" class="concept-picker" aria-label="Découvrir les mouvements des plaques" hidden>
-      <div><span class="picker-label">LA TECTONIQUE DES PLAQUES</span><p>Choisis un mouvement à montrer.</p></div>
-      <div class="concept-options" id="plate-options" role="group" aria-label="Mouvement des plaques"></div>
-    </section>
     <section class="presentation" aria-labelledby="slide-title">
       <div class="story">
         <h1 id="slide-title"></h1>
         <p class="lead" id="lead"></p>
       </div>
       <div class="visual">
+        <div id="plate-sequence" class="plate-sequence" hidden aria-live="polite"><strong id="plate-name"></strong><span id="plate-description"></span></div>
         <div class="visual-top"><span id="scene-label"></span><span class="model-label">Schéma simplifié</span></div>
         <div class="scene-wrap"><canvas id="scene" role="img" aria-label="Notre planète en mouvement">Votre navigateur ne peut pas afficher les scènes en trois dimensions.</canvas><div id="scene-labels" aria-hidden="true"></div></div>
         <p id="webgl-error" role="alert" hidden>La 3D n’est pas disponible. Essayez un navigateur récent avec l’accélération graphique activée. Les textes de l’exposé restent disponibles.</p>

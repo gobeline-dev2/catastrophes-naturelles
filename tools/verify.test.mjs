@@ -31,7 +31,7 @@ function mount(reduced=false){
   window.requestAnimationFrame=callback=>{pending=callback;return 1;};
   window.cancelAnimationFrame=()=>{pending=null;};
   Object.defineProperty(window.performance,'now',{value:()=>now});
-  class Viewer{constructor(){this.lost=false;}select(i){this.selected=i;}draw(p){this.progress=p;}}
+  class Viewer{constructor(){this.lost=false;window.viewer=this;}select(i,mode){this.selected=i;this.mode=mode;}draw(p){this.progress=p;}}
   window.slides=slides;window.NatureRenderer=Viewer;window.plateModes=plateModes;
   const source=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'');
   window.eval(source);
@@ -43,8 +43,8 @@ test('Presentation navigation, notes, pause, resume and replay work together',()
   $('next').click();assert.match($('slide-title').textContent,/trembler/);assert.match($('script').textContent,/séisme/);
   $('animate').click();app.advance(4000);assert.equal($('pause').hidden,false);assert.ok(app.hasPending());
   $('pause').click();assert.equal(app.hasPending(),false);assert.equal($('pause').textContent,'Reprendre');
-  $('pause').click();app.advance(18000);assert.equal($('pause').hidden,true);assert.equal($('animate').disabled,false);
-  $('animate').click();app.advance(21000);$('next').click();assert.equal(app.hasPending(),false);assert.match($('script').textContent,/tsunami/);
+  $('pause').click();app.advance(34000);assert.equal($('pause').hidden,true);assert.equal($('animate').disabled,false);
+  $('animate').click();app.advance(37000);$('next').click();assert.equal(app.hasPending(),false);assert.match($('script').textContent,/tsunami/);
   for(let i=0;i<2;i++)$('next').click();assert.equal($('next').disabled,true);assert.equal($('animate').hidden,false);
   assert.equal(app.window.document.querySelectorAll('.chapter').length,5);assert.match($('script').textContent,/tornade/);assert.equal($('step-count').textContent,'Étape 5 / 5');
   app.window.document.body.dispatchEvent(new app.window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));assert.equal($('step-count').textContent,'Étape 5 / 5');
@@ -52,7 +52,7 @@ test('Presentation navigation, notes, pause, resume and replay work together',()
 });
 test('Reduced motion uses four static steps without requesting animation frames',()=>{
   const app=mount(true);app.$('next').click();const states=new Set();
-  for(let i=0;i<4;i++){app.$('animate').click();states.add(app.$('scene-status').textContent);assert.equal(app.hasPending(),false);}
+  for(let i=0;i<4;i++){app.$('animate').click();states.add(app.$('plate-name').textContent);assert.equal(app.hasPending(),false);}
   assert.equal(states.size,4);app.close();
 });
 test('Context loss stops playback and recovery restores the controls',()=>{
@@ -98,14 +98,31 @@ test('All four plate boundaries animate with finite geometry and distinct relati
     m.dispose();
   }
 });
-test('The earthquake chapter switches between subduction, divergence, sliding and collision',()=>{
-  const app=mount();assert.equal(app.$('plate-picker').hidden,true);app.$('next').click();assert.equal(app.$('plate-picker').hidden,false);
-  for(const mode of Object.keys(plateModes)){
-    app.window.document.querySelector(`[data-mode="${mode}"]`).click();assert.equal(app.$('lead').textContent,plateModes[mode].lead);
-    app.window.document.querySelectorAll('.stage-button')[2].click();assert.match(app.$('scene-status').textContent,/brusquement|coup/);
-    app.$('animate').click();assert.ok(app.hasPending());
+test('One playback visits all plate movements, supports pause, scrub and replay',()=>{
+  const app=mount();const {$}=app;
+  assert.equal($('plate-sequence').hidden,true);$('next').click();
+  assert.equal(app.window.document.querySelector('#plate-picker'),null);
+  assert.equal($('plate-sequence').hidden,false);
+  $('animate').click();
+  const modes=Object.keys(plateModes);
+  for(let i=0;i<4;i++){
+    app.advance(i*8000);
+    assert.equal(app.window.viewer.mode,modes[i]);
+    assert.match($('plate-name').textContent,new RegExp(plateModes[modes[i]].term));
+    assert.equal(app.window.viewer.progress,0);
+    app.advance(i*8000+7500);assert.equal(app.window.viewer.progress,1);
   }
-  app.$('next').click();assert.equal(app.$('plate-picker').hidden,true);assert.equal(app.hasPending(),false);app.close();
+  app.advance(32000);assert.equal(app.hasPending(),false);assert.equal($('animate').disabled,false);
+  $('animate').click();assert.equal(app.window.viewer.mode,'subduction');assert.equal(app.window.viewer.progress,0);
+  app.advance(41000);assert.equal(app.window.viewer.mode,'divergence');
+  $('pause').click();assert.equal(app.hasPending(),false);$('pause').click();
+  app.advance(49000);assert.equal(app.window.viewer.mode,'sliding');
+  $('scrub').value=250;$('scrub').dispatchEvent(new app.window.Event('input'));
+  assert.equal(app.hasPending(),false);assert.equal(app.window.viewer.mode,'divergence');assert.equal(app.window.viewer.progress,0);
+  $('scrub').value=1000;$('scrub').dispatchEvent(new app.window.Event('input'));
+  assert.equal(app.window.viewer.mode,'collision');assert.equal(app.window.viewer.progress,1);
+  $('next').click();assert.equal($('plate-sequence').hidden,true);
+  $('previous').click();assert.equal(app.window.viewer.mode,'subduction');assert.equal(app.window.viewer.progress,0);app.close();
 });
 
 test('The final question supports retrying and resets when revisited',()=>{

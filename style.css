@@ -87,3 +87,7 @@ body[data-concept=toys] .concept-button[aria-pressed=true] { background:#cbb6ef;
 .quiz-answers .button { background:#fffdf5; color:var(--ink); border:2px solid var(--ink); font-size:16px; text-align:left; }
 .quiz-answers .button[aria-pressed=true] { background:#ffe19b; box-shadow:3px 3px 0 var(--ink); }
 #quiz-feedback { margin:16px 0 0; min-height:1.5em; font-weight:700; }
+
+.plate-sequence { margin-bottom:18px; padding:14px 18px; background:#ffe19b; border:2px solid var(--ink); border-radius:8px; }
+.plate-sequence strong { display:block; font-size:clamp(20px,3vw,28px); }
+.plate-sequence span { display:block; margin-top:5px; font-size:16px; }
