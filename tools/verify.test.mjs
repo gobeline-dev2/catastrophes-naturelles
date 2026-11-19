@@ -107,3 +107,15 @@ test('The earthquake chapter switches between subduction, divergence, sliding an
   }
   app.$('next').click();assert.equal(app.$('plate-picker').hidden,true);assert.equal(app.hasPending(),false);app.close();
 });
+
+test('The final question supports retrying and resets when revisited',()=>{
+  const app=mount();const {$}=app;
+  assert.equal($('quiz').hidden,true);
+  for(let i=1;i<slides.length;i++)$('next').click();
+  assert.equal($('quiz').hidden,false);
+  const answer=key=>app.window.document.querySelector(`[data-answer="${key}"]`);
+  for(const key of ['A','C']){answer(key).click();assert.equal($('quiz-feedback').textContent,'Essaie encore !');}
+  answer('B').click();assert.match($('quiz-feedback').textContent,/Bravo/);assert.equal(answer('B').getAttribute('aria-pressed'),'true');
+  $('previous').click();assert.equal($('quiz').hidden,true);
+  $('next').click();assert.equal($('quiz-feedback').textContent,'');assert.equal(answer('B').getAttribute('aria-pressed'),'false');app.close();
+});

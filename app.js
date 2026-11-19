@@ -17,6 +17,9 @@ function render(index){
   $('slide-title').textContent=s.title;$('lead').textContent=s.lead;
   $('scene-label').textContent=s.label;$('scene').setAttribute('aria-label',s.lead);
   $('script').textContent=s.script;
+  $('quiz').hidden=current!==slides.length-1;
+  $('quiz-feedback').textContent='';
+  document.querySelectorAll('[data-answer]').forEach(button=>button.setAttribute('aria-pressed','false'));
   $('step-count').textContent=`Étape ${current+1} / ${slides.length}`;$('duration').textContent=s.duration;
   $('previous').disabled=current===0;$('next').disabled=current===slides.length-1;$('next').textContent='Suivant →';
   $('animate').hidden=current===0;$('animate').textContent=reducedMotion.matches?'Voir les étapes →':'▶ Lancer l’animation';
@@ -39,4 +42,8 @@ document.querySelector('.brand').addEventListener('click',e=>{e.preventDefault()
 document.addEventListener('keydown',e=>{if(e.target.closest('button,summary,a,input,textarea,select'))return;if(e.key==='ArrowRight'){e.preventDefault();render(current+1);}if(e.key==='ArrowLeft'){e.preventDefault();render(current-1);}});
 $('scene').addEventListener('renderer-unavailable',()=>{stop();$('webgl-error').hidden=false;});
 $('scene').addEventListener('renderer-available',()=>{$('webgl-error').hidden=true;$('animate').disabled=false;});
+document.querySelectorAll('[data-answer]').forEach(button=>button.addEventListener('click',()=>{
+  document.querySelectorAll('[data-answer]').forEach(choice=>choice.setAttribute('aria-pressed',choice===button));
+  $('quiz-feedback').textContent=button.dataset.answer==='B'?'Bravo ! Un séisme est un tremblement de terre.':'Essaie encore !';
+}));
 render(0);

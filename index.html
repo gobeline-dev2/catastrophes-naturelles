@@ -41,6 +41,15 @@
         </div>
       </div>
     </section>
+    <section id="quiz" class="quiz" aria-labelledby="quiz-question" hidden>
+      <h2 id="quiz-question">Quel phénomène fait trembler le sol ?</h2>
+      <div class="quiz-answers" role="group" aria-labelledby="quiz-question">
+        <button class="button" type="button" data-answer="A" aria-pressed="false">Réponse A : une tornade</button>
+        <button class="button" type="button" data-answer="B" aria-pressed="false">Réponse B : un séisme</button>
+        <button class="button" type="button" data-answer="C" aria-pressed="false">Réponse C : un tsunami</button>
+      </div>
+      <p id="quiz-feedback" role="status"></p>
+    </section>
     <div class="bottom-bar">
       <div class="chapter-progress"><span id="step-count"></span><span id="duration"></span></div>
       <div class="navigation"><button class="button quiet" id="previous" type="button">← Précédent</button><button class="button next" id="next" type="button">Suivant →</button></div>
