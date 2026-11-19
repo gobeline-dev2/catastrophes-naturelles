@@ -41,37 +41,84 @@ function draw(p=0){
   if(stage!==nextStage){stage=nextStage;document.querySelectorAll('.stage-button').forEach((button,i)=>button.setAttribute('aria-pressed',i===stage));}
 }
 function stop(){if(animation!==null)cancelAnimationFrame(animation);animation=null;paused=false;elapsed=0;stage=-1;$('pause').hidden=true;$('animate').disabled=!viewer||viewer.lost;}
+function playFrom(position=0){
+  if(current===slides.length)return;
+  stop();draw(position);
+  if(reducedMotion.matches||!viewer||viewer.lost||current===0||progress>=1)return;
+  elapsed=progress*duration();startTime=performance.now()-elapsed;
+  $('animate').disabled=true;$('pause').hidden=false;$('pause').textContent='⏸ Pause';
+  animation=requestAnimationFrame(tick);
+}
 function render(index){
-  stop();current=clamp(index,0,slides.length-1);const s=activeSlide();
+  stop();current=clamp(index,0,slides.length);
+  const isQuiz=current===slides.length;
+  document.querySelector('.presentation').hidden=isQuiz;document.querySelector('.speaker').hidden=isQuiz;$('quiz').hidden=!isQuiz;
+  $('previous').disabled=current===0;$('next').disabled=isQuiz;$('next').textContent=current===slides.length-1?'Quiz →':'Suivant →';
+  $('step-count').textContent=isQuiz?'Quiz':'Étape '+(current+1)+' / '+slides.length;
+  document.querySelectorAll('.chapter').forEach((el,i)=>{el.classList.toggle('active',i===current);if(i===current)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
+  if(isQuiz){$('duration').textContent='3 questions + bonus';return;}
+  const s=activeSlide();
   $('slide-title').textContent=s.title;$('lead').textContent=s.lead;
   $('scene-label').textContent=s.label;$('scene').setAttribute('aria-label',s.lead);
   $('script').textContent=s.script;
-  $('quiz').hidden=current!==slides.length-1;
-  $('quiz-feedback').textContent='';
-  document.querySelectorAll('[data-answer]').forEach(button=>button.setAttribute('aria-pressed','false'));
   $('step-count').textContent=`Étape ${current+1} / ${slides.length}`;$('duration').textContent=s.duration;
-  $('previous').disabled=current===0;$('next').disabled=current===slides.length-1;$('next').textContent='Suivant →';
   $('animate').hidden=current===0;$('animate').textContent=reducedMotion.matches?'Voir les étapes →':'▶ Lancer l’animation';
   document.querySelectorAll('.chapter').forEach((el,i)=>{el.classList.toggle('active',i===current);if(i===current)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
   $('timeline').hidden=current===0;
   const shortLabels=current===1?plateOrder.map(mode=>plateModes[mode].term):s.stageLabels||['Au début','Ça bouge','Le phénomène','À la fin'];
-  $('stage-buttons').replaceChildren(...shortLabels.map((text,i)=>{const b=document.createElement('button');b.type='button';b.className='stage-button';b.textContent=text;b.setAttribute('aria-label',s.status[i]||text);b.addEventListener('click',()=>{stop();draw((current===1?plateSnapshots:s.snapshots||[0,.38,.66,1])[i]);});return b;}));
+  $('stage-buttons').replaceChildren(...shortLabels.map((text,i)=>{const b=document.createElement('button');b.type='button';b.className='stage-button';b.textContent=text;b.setAttribute('aria-label',current===1?text:s.status[i]||text);b.addEventListener('click',()=>playFrom((current===1?(reducedMotion.matches?plateSnapshots:[0,.25,.5,.75]):s.snapshots||[0,.38,.66,1])[i]));return b;}));
   $('plate-sequence').hidden=current!==1;
   plateMode='subduction';
   viewer?.select(current,plateMode);draw();
 }
 function tick(now){elapsed=now-startTime;draw(clamp(elapsed/duration()));if(elapsed<duration()){animation=requestAnimationFrame(tick);}else{animation=null;$('pause').hidden=true;$('animate').disabled=!viewer||viewer.lost;$('animate').textContent='↻ Revoir l’animation';}}
-document.querySelector('.chapters').replaceChildren(...slides.map((s,i)=>{const b=document.createElement('button');b.type='button';b.className='chapter';b.innerHTML=`<span class="chapter-number">${String(i+1).padStart(2,'0')}</span>${s.nav}`;b.addEventListener('click',()=>render(i));return b;}));
-$('animate').addEventListener('click',()=>{if(reducedMotion.matches){const next=stage>=3?0:stage+1;draw((current===1?plateSnapshots:activeSlide().snapshots||[0,.38,.66,1])[next]);return;}stop();draw(0);$('animate').disabled=true;$('pause').hidden=false;$('pause').textContent='Pause';startTime=performance.now();animation=requestAnimationFrame(tick);});
-$('scrub').addEventListener('input',()=>{stop();draw(Number($('scrub').value)/1000);});
-$('pause').addEventListener('click',()=>{if(paused){paused=false;startTime=performance.now()-elapsed;animation=requestAnimationFrame(tick);$('pause').textContent='Pause';}else{paused=true;cancelAnimationFrame(animation);animation=null;$('pause').textContent='Reprendre';}});
+document.querySelector('.chapters').replaceChildren(...[...slides,{nav:"Quiz"}].map((s,i)=>{const b=document.createElement('button');b.type='button';b.className='chapter';b.innerHTML=`<span class="chapter-number">${String(i+1).padStart(2,'0')}</span>${s.nav}`;b.addEventListener('click',()=>render(i));return b;}));
+$('animate').addEventListener('click',()=>{if(reducedMotion.matches){const next=stage>=3?0:stage+1;draw((current===1?plateSnapshots:activeSlide().snapshots||[0,.38,.66,1])[next]);return;}playFrom(0);});
+$('scrub').addEventListener('input',()=>playFrom(Number($('scrub').value)/1000));
+$('pause').addEventListener('click',()=>{if(paused){paused=false;startTime=performance.now()-elapsed;animation=requestAnimationFrame(tick);$('pause').textContent='⏸ Pause';}else{paused=true;cancelAnimationFrame(animation);animation=null;$('pause').textContent='▶ Reprendre';}});
 $('previous').addEventListener('click',()=>render(current-1));$('next').addEventListener('click',()=>render(current+1));
 document.querySelector('.brand').addEventListener('click',e=>{e.preventDefault();render(0);});
-document.addEventListener('keydown',e=>{if(e.target.closest('button,summary,a,input,textarea,select'))return;if(e.key==='ArrowRight'){e.preventDefault();render(current+1);}if(e.key==='ArrowLeft'){e.preventDefault();render(current-1);}});
+document.addEventListener('keydown',e=>{if(document.fullscreenElement||document.body.classList.contains('animation-expanded')||e.target.closest('button,summary,a,input,textarea,select'))return;if(e.key==='ArrowRight'){e.preventDefault();render(current+1);}if(e.key==='ArrowLeft'){e.preventDefault();render(current-1);}});
 $('scene').addEventListener('renderer-unavailable',()=>{stop();$('webgl-error').hidden=false;});
 $('scene').addEventListener('renderer-available',()=>{$('webgl-error').hidden=true;$('animate').disabled=false;});
-document.querySelectorAll('[data-answer]').forEach(button=>button.addEventListener('click',()=>{
-  document.querySelectorAll('[data-answer]').forEach(choice=>choice.setAttribute('aria-pressed',choice===button));
-  $('quiz-feedback').textContent=button.dataset.answer==='B'?'Bravo ! Un séisme est un tremblement de terre.':'Essaie encore !';
-}));
+const quizQuestions=[
+  {question:'Quel phénomène fait trembler le sol ?',answers:['une tornade','un séisme','un tsunami'],correct:1,explanation:'Un séisme est un tremblement de terre.'},
+  {question:'Comment appelle-t-on le magma quand il sort du volcan ?',answers:['la lave','la pluie','le vent'],correct:0,explanation:'À la surface, le magma s’appelle la lave.'},
+  {question:'La mer se retire-t-elle avant tous les tsunamis ?',answers:['oui, toujours','non, pas toujours','seulement la nuit'],correct:1,explanation:'La mer ne se retire pas toujours avant un tsunami.'},
+  {question:'Qu’est-ce qu’une tornade ?',answers:['une montagne','une grande vague','une colonne d’air qui tourne très vite'],correct:2,explanation:'Une tornade relie un nuage d’orage au sol.'}
+];
+function resetQuiz(){
+  $('quiz-questions').replaceChildren(...quizQuestions.map((q,i)=>{
+    const card=document.createElement('section');card.className='quiz-card';card.dataset.question=i;
+    const title=document.createElement('h2');title.id='quiz-question-'+i;title.textContent=(i===3?'Bonus : ':String(i+1)+'. ')+q.question;
+    const choices=document.createElement('div');choices.className='quiz-answers';choices.setAttribute('role','group');choices.setAttribute('aria-labelledby',title.id);
+    const feedback=document.createElement('p');feedback.className='quiz-feedback';feedback.setAttribute('role','status');
+    q.answers.forEach((answer,j)=>{
+      const button=document.createElement('button');button.type='button';button.className='button';button.dataset.answer='ABC'[j];button.setAttribute('aria-pressed','false');button.textContent='Réponse '+'ABC'[j]+' : '+answer;
+      button.addEventListener('click',()=>{
+        choices.querySelectorAll('button').forEach(choice=>choice.setAttribute('aria-pressed',choice===button));
+        feedback.textContent=j===q.correct?'Bravo ! '+q.explanation:'Essaie encore !';
+      });choices.append(button);
+    });card.append(title,choices,feedback);return card;
+  }));
+}
+$('quiz-reset').addEventListener('click',resetQuiz);
+resetQuiz();
 render(0);
+
+const panel=$('animation-panel');
+function syncFullscreen(){
+  const expanded=document.fullscreenElement===panel||panel.classList.contains('expanded');
+  $('fullscreen').textContent=expanded?'Quitter le plein écran':'⛶ Plein écran';
+  $('fullscreen').setAttribute('aria-pressed',expanded);
+  document.body.classList.toggle('animation-expanded',expanded);
+  viewer?.resize?.();
+}
+$('fullscreen').addEventListener('click',async()=>{
+  if(document.fullscreenElement===panel){await document.exitFullscreen();}
+  else if(panel.classList.contains('expanded')){panel.classList.remove('expanded');}
+  else {try{if(!panel.requestFullscreen)throw new Error('unsupported');await panel.requestFullscreen();}catch{panel.classList.add('expanded');}}
+  syncFullscreen();
+});
+document.addEventListener('fullscreenchange',syncFullscreen);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('expanded')){panel.classList.remove('expanded');syncFullscreen();}});

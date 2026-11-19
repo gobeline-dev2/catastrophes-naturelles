@@ -6,24 +6,47 @@
   <meta name="theme-color" content="#152c38">
   <meta name="description" content="Un exposé de cinq minutes pour découvrir les séismes, les tsunamis, les volcans et les tornades, avec des animations adaptées au CE1.">
   <title>Quand la nature bouge — Exposé CE1</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="app.js" type="module"></script>
+  <link rel="stylesheet" href="style.css?v=quiz-1">
+  <script src="app.js?v=quiz-1" type="module"></script>
 </head>
 <body data-concept="comic">
   <header class="header">
-    <a href="#" class="brand" aria-label="Retour à l’introduction"><span class="brand-mark" aria-hidden="true">✳</span> Les petits explorateurs</a>
+    <a href="#" class="brand" aria-label="Retour à l’introduction"><span class="brand-mark" aria-hidden="true">✦</span> Les petits explorateurs</a>
     <span class="header-note">CE1 <span aria-hidden="true">·</span> 5 minutes</span>
   </header>
   <main>
     <nav class="chapters" aria-label="Les étapes de l’exposé"></nav>
     <section class="presentation" aria-labelledby="slide-title">
       <div class="story">
+        <div class="comic-hero" aria-hidden="true">
+          <svg viewBox="0 0 220 130" xmlns="http://www.w3.org/2000/svg" focusable="false">
+            <ellipse cx="103" cy="119" rx="65" ry="7" fill="#211c2c" opacity=".15"/>
+            <g stroke="#211c2c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M69 83 54 112 76 117 93 91M115 89 127 114 149 110 136 81" fill="#8147b3"/>
+              <path d="M62 58 39 78 49 87 76 74M132 58 154 44 165 56 143 77" fill="#ffb34e"/>
+              <path d="M158 49 169 32M165 53 180 43" fill="none"/>
+              <path d="M75 57Q102 43 131 58L139 91Q106 108 68 90Z" fill="#a8d943"/>
+              <path d="M72 44Q63 11 100 8 142 6 138 46L130 61Q103 77 79 58Z" fill="#ffb34e"/>
+              <path d="M69 35Q61 5 99 3 136 1 143 30L119 25 88 30Z" fill="#8147b3"/>
+              <path d="m69 35-8 4 19 5" fill="#8147b3"/>
+              <rect x="77" y="31" width="29" height="23" rx="9" fill="white"/>
+              <rect x="108" y="29" width="29" height="23" rx="9" fill="white"/>
+              <path d="m106 39 3-1M91 40v5m31-7v5M99 59q10 6 18-2" fill="none"/>
+              <path d="m179 16 5-10m6 20 12-3M42 28l-8-8" fill="none"/>
+            </g>
+          </svg>
+        </div>
         <h1 id="slide-title"></h1>
         <p class="lead" id="lead"></p>
       </div>
-      <div class="visual">
+      <div class="visual" id="animation-panel">
         <div id="plate-sequence" class="plate-sequence" hidden aria-live="polite"><strong id="plate-name"></strong><span id="plate-description"></span></div>
         <div class="visual-top"><span id="scene-label"></span><span class="model-label">Schéma simplifié</span></div>
+        <div class="animation-controls">
+          <button class="button quiet" id="fullscreen" type="button" aria-pressed="false">⛶ Plein écran</button>
+          <button class="button primary" id="animate" type="button">▶ Lancer l’animation</button>
+          <button class="button primary pause-button" id="pause" type="button" hidden>⏸ Pause</button>
+        </div>
         <div class="scene-wrap"><canvas id="scene" role="img" aria-label="Notre planète en mouvement">Votre navigateur ne peut pas afficher les scènes en trois dimensions.</canvas><div id="scene-labels" aria-hidden="true"></div></div>
         <p id="webgl-error" role="alert" hidden>La 3D n’est pas disponible. Essayez un navigateur récent avec l’accélération graphique activée. Les textes de l’exposé restent disponibles.</p>
         <p class="scene-status" id="scene-status" aria-live="polite"></p>
@@ -32,21 +55,9 @@
           <label class="scrub-label" for="scrub">Fais avancer le temps <span id="time-value">0 %</span></label>
           <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Avancement de l’animation">
         </div>
-        <div class="animation-controls">
-          <button class="button primary" id="animate" type="button">▶ Lancer l’animation</button>
-          <button class="button quiet" id="pause" type="button" hidden>Pause</button>
-        </div>
       </div>
     </section>
-    <section id="quiz" class="quiz" aria-labelledby="quiz-question" hidden>
-      <h2 id="quiz-question">Quel phénomène fait trembler le sol ?</h2>
-      <div class="quiz-answers" role="group" aria-labelledby="quiz-question">
-        <button class="button" type="button" data-answer="A" aria-pressed="false">Réponse A : une tornade</button>
-        <button class="button" type="button" data-answer="B" aria-pressed="false">Réponse B : un séisme</button>
-        <button class="button" type="button" data-answer="C" aria-pressed="false">Réponse C : un tsunami</button>
-      </div>
-      <p id="quiz-feedback" role="status"></p>
-    </section>
+    <section id="quiz" class="quiz quiz-page" aria-labelledby="quiz-title" hidden><h1 id="quiz-title">À toi de jouer !</h1><p>Trois questions et un bonus. Choisis A, B ou C.</p><div id="quiz-questions"></div><button type="button" class="button quiet" id="quiz-reset">Recommencer le quiz</button></section>
     <div class="bottom-bar">
       <div class="chapter-progress"><span id="step-count"></span><span id="duration"></span></div>
       <div class="navigation"><button class="button quiet" id="previous" type="button">← Précédent</button><button class="button next" id="next" type="button">Suivant →</button></div>

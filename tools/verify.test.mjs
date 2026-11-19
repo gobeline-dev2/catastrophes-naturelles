@@ -42,12 +42,12 @@ test('Presentation navigation, notes, pause, resume and replay work together',()
   assert.equal($('previous').disabled,true);assert.equal($('animate').hidden,true);
   $('next').click();assert.match($('slide-title').textContent,/trembler/);assert.match($('script').textContent,/séisme/);
   $('animate').click();app.advance(4000);assert.equal($('pause').hidden,false);assert.ok(app.hasPending());
-  $('pause').click();assert.equal(app.hasPending(),false);assert.equal($('pause').textContent,'Reprendre');
+  $('pause').click();assert.equal(app.hasPending(),false);assert.equal($('pause').textContent,'▶ Reprendre');
   $('pause').click();app.advance(34000);assert.equal($('pause').hidden,true);assert.equal($('animate').disabled,false);
   $('animate').click();app.advance(37000);$('next').click();assert.equal(app.hasPending(),false);assert.match($('script').textContent,/tsunami/);
-  for(let i=0;i<2;i++)$('next').click();assert.equal($('next').disabled,true);assert.equal($('animate').hidden,false);
-  assert.equal(app.window.document.querySelectorAll('.chapter').length,5);assert.match($('script').textContent,/tornade/);assert.equal($('step-count').textContent,'Étape 5 / 5');
-  app.window.document.body.dispatchEvent(new app.window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));assert.equal($('step-count').textContent,'Étape 5 / 5');
+  for(let i=0;i<2;i++)$('next').click();assert.equal($('next').disabled,false);assert.equal($('animate').hidden,false);
+  assert.equal(app.window.document.querySelectorAll('.chapter').length,6);assert.match($('script').textContent,/tornade/);assert.equal($('step-count').textContent,'Étape 5 / 5');
+  app.window.document.body.dispatchEvent(new app.window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));assert.equal($('step-count').textContent,'Quiz');
   app.window.document.querySelector('.brand').click();assert.match($('step-count').textContent,/1 \/ 5/);app.close();
 });
 test('Reduced motion uses four static steps without requesting animation frames',()=>{
@@ -82,7 +82,7 @@ test('The comic style is fixed and beach step controls still work',()=>{
   assert.equal(app.window.document.body.dataset.concept,'comic');assert.equal(app.window.document.querySelector('#concept-options'),null);
   steps[3].click();assert.match(app.$('scene-status').textContent,/inonde/);
   app.$('scrub').value=670;app.$('scrub').dispatchEvent(new app.window.Event('input'));
-  assert.match(app.$('scene-status').textContent,/vague arrive/);assert.equal(app.hasPending(),false);app.close();
+  assert.match(app.$('scene-status').textContent,/vague arrive/);assert.equal(app.hasPending(),true);app.close();
 });
 test('All four plate boundaries animate with finite geometry and distinct relative motion',()=>{
   for(const mode of Object.keys(plateModes)){
@@ -118,21 +118,46 @@ test('One playback visits all plate movements, supports pause, scrub and replay'
   $('pause').click();assert.equal(app.hasPending(),false);$('pause').click();
   app.advance(49000);assert.equal(app.window.viewer.mode,'sliding');
   $('scrub').value=250;$('scrub').dispatchEvent(new app.window.Event('input'));
-  assert.equal(app.hasPending(),false);assert.equal(app.window.viewer.mode,'divergence');assert.equal(app.window.viewer.progress,0);
+  assert.equal(app.hasPending(),true);assert.equal(app.window.viewer.mode,'divergence');assert.equal(app.window.viewer.progress,0);
   $('scrub').value=1000;$('scrub').dispatchEvent(new app.window.Event('input'));
   assert.equal(app.window.viewer.mode,'collision');assert.equal(app.window.viewer.progress,1);
   $('next').click();assert.equal($('plate-sequence').hidden,true);
   $('previous').click();assert.equal(app.window.viewer.mode,'subduction');assert.equal(app.window.viewer.progress,0);app.close();
 });
 
-test('The final question supports retrying and resets when revisited',()=>{
-  const app=mount();const {$}=app;
-  assert.equal($('quiz').hidden,true);
-  for(let i=1;i<slides.length;i++)$('next').click();
-  assert.equal($('quiz').hidden,false);
-  const answer=key=>app.window.document.querySelector(`[data-answer="${key}"]`);
-  for(const key of ['A','C']){answer(key).click();assert.equal($('quiz-feedback').textContent,'Essaie encore !');}
-  answer('B').click();assert.match($('quiz-feedback').textContent,/Bravo/);assert.equal(answer('B').getAttribute('aria-pressed'),'true');
-  $('previous').click();assert.equal($('quiz').hidden,true);
-  $('next').click();assert.equal($('quiz-feedback').textContent,'');assert.equal(answer('B').getAttribute('aria-pressed'),'false');app.close();
+test('The Quiz tab has three questions plus a bonus, independent feedback and reset',()=>{
+  const app=mount();const {$}=app;const doc=app.window.document;
+  for(let i=1;i<slides.length;i++)$('next').click();assert.equal($('quiz').hidden,true);
+  $('next').click();assert.equal($('quiz').hidden,false);assert.equal(doc.querySelector('.presentation').hidden,true);assert.equal($('next').disabled,true);
+  const cards=doc.querySelectorAll('.quiz-card');assert.equal(cards.length,4);
+  assert.match(cards[0].textContent,/Quel phénomène fait trembler le sol/);assert.match(cards[3].textContent,/Bonus : Qu’est-ce qu’une tornade/);
+  const correct=[1,0,1,2];
+  cards.forEach((card,i)=>{const buttons=card.querySelectorAll('button');assert.equal(buttons.length,3);buttons[(correct[i]+1)%3].click();assert.equal(card.querySelector('.quiz-feedback').textContent,'Essaie encore !');buttons[correct[i]].click();assert.match(card.querySelector('.quiz-feedback').textContent,/Bravo/);});
+  $('previous').click();assert.equal($('quiz').hidden,true);assert.equal(doc.querySelector('.presentation').hidden,false);
+  $('next').click();assert.match(cards[0].querySelector('.quiz-feedback').textContent,/Bravo/);
+  $('quiz-reset').click();doc.querySelectorAll('.quiz-feedback').forEach(el=>assert.equal(el.textContent,''));
+  doc.querySelector('.chapters').children[1].click();$('animate').click();assert.ok(app.hasPending());
+  doc.querySelector('.chapters').lastElementChild.click();assert.equal(app.hasPending(),false);assert.equal($('quiz').hidden,false);app.close();
+});
+
+test('Pause freezes the scene and resume excludes time spent paused',()=>{
+  const app=mount();const {$}=app;$('next').click();$('animate').click();
+  app.advance(5000);const before=app.window.viewer.progress;const mode=app.window.viewer.mode;
+  $('pause').click();assert.equal($('pause').textContent,'▶ Reprendre');
+  app.advance(65000);assert.equal(app.window.viewer.progress,before);assert.equal(app.hasPending(),false);
+  $('pause').click();app.advance(65000);assert.equal(app.window.viewer.progress,before);assert.equal(app.window.viewer.mode,mode);
+  app.advance(66000);assert.ok(app.window.viewer.progress>before);assert.equal($('pause').textContent,'⏸ Pause');app.close();
+});
+
+test('Selecting a position starts playback there, including after a pause',()=>{
+  const app=mount();const {$}=app;$('next').click();
+  app.window.document.querySelectorAll('.stage-button')[2].click();
+  assert.equal(app.window.viewer.mode,'sliding');assert.equal(app.window.viewer.progress,0);assert.ok(app.hasPending());
+  app.advance(2000);assert.ok(app.window.viewer.progress>0);
+  $('pause').click();$('scrub').value=300;$('scrub').dispatchEvent(new app.window.Event('input'));
+  assert.ok(app.hasPending());assert.equal($('pause').textContent,'⏸ Pause');assert.equal($('scrub').value,'300');
+  app.advance(3000);assert.ok(Number($('scrub').value)>300);
+  $('scrub').value=1000;$('scrub').dispatchEvent(new app.window.Event('input'));assert.equal(app.hasPending(),false);
+  $('next').click();assert.equal(app.hasPending(),false);app.close();
+  const reduced=mount(true);reduced.$('next').click();reduced.$('scrub').value=500;reduced.$('scrub').dispatchEvent(new reduced.window.Event('input'));assert.equal(reduced.hasPending(),false);reduced.close();
 });
