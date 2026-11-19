@@ -170,3 +170,17 @@ test('Fullscreen fallback keeps playback and can be exited with Escape',async()=
   assert.equal($('animation-panel').classList.contains('expanded'),false);assert.equal($('fullscreen').getAttribute('aria-pressed'),'false');
   $('pause').click();assert.ok(app.hasPending());app.close();
 });
+
+
+test('Ink detailing stays fixed while existing scene animation advances',()=>{
+  for(const index of [1,2,3,4]){
+    const model=createModel(index),decor=[];
+    model.group.traverse(o=>{if(o.userData.inkSculpted)decor.push([o,Array.from(o.geometry.attributes.position.array)]);});
+    assert.ok(decor.length>0);
+    for(const p of [.2,.6,1]){
+      model.update(p);
+      for(const [object,vertices] of decor)assert.deepEqual(Array.from(object.geometry.attributes.position.array),vertices);
+    }
+    model.dispose();
+  }
+});

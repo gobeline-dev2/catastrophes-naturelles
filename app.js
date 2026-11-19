@@ -1,5 +1,5 @@
 import { slides } from './content.js';
-import { NatureRenderer } from './scenes.js?v=ink-2';
+import { NatureRenderer } from './scenes.js?v=no-characters-6';
 import { plateModes } from './tectonics.js?v=webgl-2';
 
 const $=id=>document.getElementById(id);

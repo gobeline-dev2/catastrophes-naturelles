@@ -1,5 +1,6 @@
 import * as THREE from './vendor/three.module.js';
 import { createPlateScene } from './tectonics.js';
+import { addInkDetails } from './ink-details.js';
 
 const C={grass:0x9aab76,earth:0xc59a74,deep:0x9f795e,water:0x709dab,foam:0xe8eee8,rock:0x91838e,lava:0xd47f4b,cream:0xe9dfc9,roof:0xb87965,cloud:0x9296a5};
 // Three ink-like light bands, shared by all toon materials.
@@ -45,6 +46,7 @@ export function tsunamiState(p){
 function applyConcept(group,concept){
   const meshes=[];group.traverse(o=>{if(o.isMesh)meshes.push(o);});
   for(const o of meshes){
+    if(concept==='comic'&&!o.material.transparent)addInkDetails(o);
     const old=o.material;
     if(concept!=='toys'){
       o.material=new THREE.MeshToonMaterial({color:old.color.clone().offsetHSL(0,-.08,0),gradientMap:comicRamp,side:old.side,transparent:old.transparent,opacity:old.opacity,depthWrite:old.depthWrite,emissive:old.emissive||0x000000,emissiveIntensity:old.emissiveIntensity??1});
@@ -173,5 +175,6 @@ export class NatureRenderer {
   resize(){const w=this.canvas.parentElement.clientWidth;if(!w)return;const h=this.canvas.parentElement.clientHeight||w*470/700;this.renderer.setSize(w,h,false);const aspect=w/h;const height=6.3;this.camera.left=-height*aspect/2;this.camera.right=height*aspect/2;this.camera.top=height/2;this.camera.bottom=-height/2;this.camera.updateProjectionMatrix();this.paint();}
   select(index,plateMode='subduction'){if(this.model){this.scene.remove(this.model.group);this.model.dispose();}this.model=createModel(index,'comic',plateMode);this.camera.position.set(2,index===1?(plateMode==='sliding'?7:3.5):4.3,11);this.camera.lookAt(0,index===1?.1:index===2?.6:1.05,0);this.scene.add(this.model.group);this.labelRoot.replaceChildren(...this.model.labels.map(l=>{const el=document.createElement('span');el.className=/!/.test(l.text)?'scene-tag sound-effect':'scene-tag';el.textContent=l.text;l.el=el;return el;}));this.draw(0);}
   draw(progress){this.progress=progress;this.model?.update(progress);this.paint();}
-  paint(){if(this.lost)return;this.scene.updateMatrixWorld(true);this.renderer.render(this.scene,this.camera);for(const label of this.model?.labels||[]){const pos=label.point.clone().project(this.camera);label.el.hidden=this.progress<(label.from??0)||this.progress>(label.to??1);label.el.style.left=`${(pos.x*.5+.5)*100}%`;label.el.style.top=`${(-pos.y*.5+.5)*100}%`;}}
+  paint(){if(this.lost)return;this.scene.updateMatrixWorld(true);this.renderer.render(this.scene,this.camera);
+    for(const label of this.model?.labels||[]){const pos=label.point.clone().project(this.camera);label.el.hidden=this.progress<(label.from??0)||this.progress>(label.to??1);label.el.style.left=`${(pos.x*.5+.5)*100}%`;label.el.style.top=`${(-pos.y*.5+.5)*100}%`;}}
 }
