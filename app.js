@@ -1,6 +1,6 @@
 import { slides } from './content.js';
-import { NatureRenderer } from './scenes.js';
-import { plateModes } from './tectonics.js';
+import { NatureRenderer } from './scenes.js?v=ink-2';
+import { plateModes } from './tectonics.js?v=webgl-2';
 
 const $=id=>document.getElementById(id);
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));

@@ -1,7 +1,10 @@
 import * as THREE from './vendor/three.module.js';
 import { createPlateScene } from './tectonics.js';
 
-const C={grass:0x79c855,earth:0xeab666,deep:0xb6814f,water:0x16b9d6,foam:0xe8ffff,rock:0x9374ae,lava:0xff7136,cream:0xffe9b0,roof:0xee6461,cloud:0x8d99cd};
+const C={grass:0x9aab76,earth:0xc59a74,deep:0x9f795e,water:0x709dab,foam:0xe8eee8,rock:0x91838e,lava:0xd47f4b,cream:0xe9dfc9,roof:0xb87965,cloud:0x9296a5};
+// Three ink-like light bands, shared by all toon materials.
+const comicRamp=new THREE.DataTexture(new Uint8Array([115,190,255]),3,1,THREE.RedFormat);
+comicRamp.minFilter=THREE.NearestFilter;comicRamp.magFilter=THREE.NearestFilter;comicRamp.needsUpdate=true;
 const clamp=x=>Math.max(0,Math.min(1,x));
 const ease=x=>{x=clamp(x);return x*x*(3-2*x);};
 function material(color,options={}){return new THREE.MeshStandardMaterial({color,roughness:.65,flatShading:false,...options});}
@@ -44,13 +47,13 @@ function applyConcept(group,concept){
   for(const o of meshes){
     const old=o.material;
     if(concept!=='toys'){
-      o.material=new THREE.MeshToonMaterial({color:old.color,side:old.side,transparent:old.transparent,opacity:old.opacity,depthWrite:old.depthWrite,emissive:old.emissive||0x000000,emissiveIntensity:old.emissiveIntensity??1});
+      o.material=new THREE.MeshToonMaterial({color:old.color.clone().offsetHSL(0,-.08,0),gradientMap:comicRamp,side:old.side,transparent:old.transparent,opacity:old.opacity,depthWrite:old.depthWrite,emissive:old.emissive||0x000000,emissiveIntensity:old.emissiveIntensity??1});
       old.dispose();
     }else{o.material.roughness=.28;o.material.metalness=.02;}
     if(concept==='comic'&&o.name!=='descending-plate'&&o.geometry.type!=='PlaneGeometry'&&!o.material.transparent&&o.geometry.type!=='TubeGeometry'){
-      const edge=new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry,32),new THREE.LineBasicMaterial({color:0x283148}));edge.userData.outline=true;o.add(edge);
+      const edge=new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry,32),new THREE.LineBasicMaterial({color:0x211f20}));edge.userData.outline=true;o.add(edge);
       if(['SphereGeometry','CylinderGeometry','ConeGeometry','TorusGeometry'].includes(o.geometry.type)){
-        const silhouette=new THREE.Mesh(o.geometry.clone(),new THREE.MeshBasicMaterial({color:0x283148,side:THREE.BackSide}));silhouette.scale.setScalar(1.025);silhouette.userData.outline=true;o.add(silhouette);
+        const silhouette=new THREE.Mesh(o.geometry.clone(),new THREE.MeshBasicMaterial({color:0x211f20,side:THREE.BackSide}));silhouette.scale.setScalar(1.035);silhouette.userData.outline=true;o.add(silhouette);
       }
     }
   }
@@ -168,7 +171,7 @@ export class NatureRenderer {
     this.resize();
   }
   resize(){const w=this.canvas.parentElement.clientWidth;if(!w)return;const h=this.canvas.parentElement.clientHeight||w*470/700;this.renderer.setSize(w,h,false);const aspect=w/h;const height=6.3;this.camera.left=-height*aspect/2;this.camera.right=height*aspect/2;this.camera.top=height/2;this.camera.bottom=-height/2;this.camera.updateProjectionMatrix();this.paint();}
-  select(index,plateMode='subduction'){if(this.model){this.scene.remove(this.model.group);this.model.dispose();}this.model=createModel(index,'comic',plateMode);this.camera.position.set(2,index===1?(plateMode==='sliding'?7:3.5):4.3,11);this.camera.lookAt(0,index===1?.1:index===2?.6:1.05,0);this.scene.add(this.model.group);this.labelRoot.replaceChildren(...this.model.labels.map(l=>{const el=document.createElement('span');el.className='scene-tag';el.textContent=l.text;l.el=el;return el;}));this.draw(0);}
+  select(index,plateMode='subduction'){if(this.model){this.scene.remove(this.model.group);this.model.dispose();}this.model=createModel(index,'comic',plateMode);this.camera.position.set(2,index===1?(plateMode==='sliding'?7:3.5):4.3,11);this.camera.lookAt(0,index===1?.1:index===2?.6:1.05,0);this.scene.add(this.model.group);this.labelRoot.replaceChildren(...this.model.labels.map(l=>{const el=document.createElement('span');el.className=/!/.test(l.text)?'scene-tag sound-effect':'scene-tag';el.textContent=l.text;l.el=el;return el;}));this.draw(0);}
   draw(progress){this.progress=progress;this.model?.update(progress);this.paint();}
   paint(){if(this.lost)return;this.scene.updateMatrixWorld(true);this.renderer.render(this.scene,this.camera);for(const label of this.model?.labels||[]){const pos=label.point.clone().project(this.camera);label.el.hidden=this.progress<(label.from??0)||this.progress>(label.to??1);label.el.style.left=`${(pos.x*.5+.5)*100}%`;label.el.style.top=`${(-pos.y*.5+.5)*100}%`;}}
 }

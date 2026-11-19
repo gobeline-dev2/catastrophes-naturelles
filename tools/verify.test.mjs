@@ -161,3 +161,12 @@ test('Selecting a position starts playback there, including after a pause',()=>{
   $('next').click();assert.equal(app.hasPending(),false);app.close();
   const reduced=mount(true);reduced.$('next').click();reduced.$('scrub').value=500;reduced.$('scrub').dispatchEvent(new reduced.window.Event('input'));assert.equal(reduced.hasPending(),false);reduced.close();
 });
+
+test('Fullscreen fallback keeps playback and can be exited with Escape',async()=>{
+  const app=mount();const {$}=app;$('next').click();$('animate').click();app.advance(2000);
+  $('fullscreen').click();await Promise.resolve();assert.equal($('animation-panel').classList.contains('expanded'),true);assert.ok(app.hasPending());
+  $('pause').click();assert.equal(app.hasPending(),false);
+  app.window.document.body.dispatchEvent(new app.window.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+  assert.equal($('animation-panel').classList.contains('expanded'),false);assert.equal($('fullscreen').getAttribute('aria-pressed'),'false');
+  $('pause').click();assert.ok(app.hasPending());app.close();
+});

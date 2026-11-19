@@ -24,6 +24,6 @@ Chaque push sur `main` déclenche `.github/workflows/pages.yml`. Dans les régla
 
 Vérifications : `npm ci`, puis `npm test` (géométrie 3D, navigation, pause, reprise, réduction des animations et récupération du contexte). Les tests ne remplacent pas une vérification du rendu sur un navigateur compatible WebGL 2.
 
-Site : https://gobeline-dev.github.io/catastrophes-naturelles/
+Site : https://gobeline-dev2.github.io/catastrophes-naturelles/
 
 Les sources scientifiques sont accessibles dans le bas de la page.
