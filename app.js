@@ -23,7 +23,7 @@ function draw(p=0){
     localProgress=clamp((progress*4-segment-.125)/.75);
     if(mode!==plateMode){plateMode=mode;viewer?.select(1,mode);}
     const info=plateModes[mode];
-    $('plate-name').textContent=String(segment+1)+' / 4 · '+info.term;
+    setCoverTitle($('plate-name'),String(segment+1)+' / 4 · '+info.term);
     $('plate-description').textContent=info.name;
     $('scene-label').textContent=info.label;
     $('scene').setAttribute('aria-label',info.lead);
@@ -49,16 +49,24 @@ function playFrom(position=0){
   $('animate').disabled=true;$('pause').hidden=false;$('pause').textContent='⏸ Pause';
   animation=requestAnimationFrame(tick);
 }
+function setCoverTitle(element,label){
+  if(element.classList.contains('cover-title')&&element.getAttribute('aria-label')===label)return;
+  element.classList.add('cover-title');element.setAttribute('aria-label',label);
+  element.replaceChildren(...label.split(' ').flatMap((word,i)=>{
+    const span=document.createElement('span');span.className='cover-word';span.dataset.word=word;span.setAttribute('aria-hidden','true');span.textContent=word;
+    return i?[document.createTextNode(' '),span]:[span];
+  }));
+}
 function render(index){
   stop();current=clamp(index,0,slides.length);
   const isQuiz=current===slides.length;
   document.querySelector('.presentation').hidden=isQuiz;document.querySelector('.speaker').hidden=isQuiz;$('quiz').hidden=!isQuiz;
-  $('previous').disabled=current===0;$('next').disabled=isQuiz;$('next').textContent=current===slides.length-1?'Quiz →':'Suivant →';
+  $('previous').disabled=current===0;$('next').disabled=isQuiz;$('next').hidden=isQuiz;$('next').textContent=current===slides.length-1?'Quiz →':'Suivant →';
   $('step-count').textContent=isQuiz?'Quiz':'Étape '+(current+1)+' / '+slides.length;
   document.querySelectorAll('.chapter').forEach((el,i)=>{el.classList.toggle('active',i===current);if(i===current)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
   if(isQuiz){$('duration').textContent='3 questions + bonus';return;}
   const s=activeSlide();
-  $('slide-title').textContent=s.title;$('lead').textContent=s.lead;
+  setCoverTitle($('slide-title'),s.title);$('lead').textContent=s.lead;
   $('scene-label').textContent=s.label;$('scene').setAttribute('aria-label',s.lead);
   $('script').textContent=s.script;
   $('step-count').textContent=`Étape ${current+1} / ${slides.length}`;$('duration').textContent=s.duration;
@@ -84,13 +92,13 @@ $('scene').addEventListener('renderer-available',()=>{$('webgl-error').hidden=tr
 const quizQuestions=[
   {question:'Quel phénomène fait trembler le sol ?',answers:['une tornade','un séisme','un tsunami'],correct:1,explanation:'Un séisme est un tremblement de terre.'},
   {question:'Comment appelle-t-on le magma quand il sort du volcan ?',answers:['la lave','la pluie','le vent'],correct:0,explanation:'À la surface, le magma s’appelle la lave.'},
-  {question:'La mer se retire-t-elle avant tous les tsunamis ?',answers:['oui, toujours','non, pas toujours','seulement la nuit'],correct:1,explanation:'La mer ne se retire pas toujours avant un tsunami.'},
+  {question:'Qu’est-ce qu’un tsunami ?',answers:['de la lave qui sort','de grandes vagues','de l’air qui tourne'],correct:1,explanation:'Un tsunami est une série de grandes vagues qui peuvent inonder la côte.'},
   {question:'Qu’est-ce qu’une tornade ?',answers:['une montagne','une grande vague','une colonne d’air qui tourne très vite'],correct:2,explanation:'Une tornade relie un nuage d’orage au sol.'}
 ];
 function resetQuiz(){
   $('quiz-questions').replaceChildren(...quizQuestions.map((q,i)=>{
     const card=document.createElement('section');card.className='quiz-card';card.dataset.question=i;
-    const title=document.createElement('h2');title.id='quiz-question-'+i;title.textContent=(i===3?'Bonus : ':String(i+1)+'. ')+q.question;
+    const title=document.createElement('h2');title.id='quiz-question-'+i;setCoverTitle(title,(i===3?'Bonus : ':String(i+1)+'. ')+q.question);
     const choices=document.createElement('div');choices.className='quiz-answers';choices.setAttribute('role','group');choices.setAttribute('aria-labelledby',title.id);
     const feedback=document.createElement('p');feedback.className='quiz-feedback';feedback.setAttribute('role','status');
     q.answers.forEach((answer,j)=>{
@@ -104,6 +112,7 @@ function resetQuiz(){
 }
 $('quiz-reset').addEventListener('click',resetQuiz);
 resetQuiz();
+setCoverTitle($('quiz-title'),$('quiz-title').textContent);
 render(0);
 
 const panel=$('animation-panel');

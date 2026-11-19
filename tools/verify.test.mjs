@@ -128,12 +128,12 @@ test('One playback visits all plate movements, supports pause, scrub and replay'
 test('The Quiz tab has three questions plus a bonus, independent feedback and reset',()=>{
   const app=mount();const {$}=app;const doc=app.window.document;
   for(let i=1;i<slides.length;i++)$('next').click();assert.equal($('quiz').hidden,true);
-  $('next').click();assert.equal($('quiz').hidden,false);assert.equal(doc.querySelector('.presentation').hidden,true);assert.equal($('next').disabled,true);
+  $('next').click();assert.equal($('quiz').hidden,false);assert.equal(doc.querySelector('.presentation').hidden,true);assert.equal($('next').disabled,true);assert.equal($('next').hidden,true);
   const cards=doc.querySelectorAll('.quiz-card');assert.equal(cards.length,4);
   assert.match(cards[0].textContent,/Quel phénomène fait trembler le sol/);assert.match(cards[3].textContent,/Bonus : Qu’est-ce qu’une tornade/);
   const correct=[1,0,1,2];
   cards.forEach((card,i)=>{const buttons=card.querySelectorAll('button');assert.equal(buttons.length,3);buttons[(correct[i]+1)%3].click();assert.equal(card.querySelector('.quiz-feedback').textContent,'Essaie encore !');buttons[correct[i]].click();assert.match(card.querySelector('.quiz-feedback').textContent,/Bravo/);});
-  $('previous').click();assert.equal($('quiz').hidden,true);assert.equal(doc.querySelector('.presentation').hidden,false);
+  $('previous').click();assert.equal($('quiz').hidden,true);assert.equal($('next').hidden,false);assert.equal(doc.querySelector('.presentation').hidden,false);
   $('next').click();assert.match(cards[0].querySelector('.quiz-feedback').textContent,/Bravo/);
   $('quiz-reset').click();doc.querySelectorAll('.quiz-feedback').forEach(el=>assert.equal(el.textContent,''));
   doc.querySelector('.chapters').children[1].click();$('animate').click();assert.ok(app.hasPending());
