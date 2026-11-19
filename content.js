@@ -1,17 +1,111 @@
 export const slides = [
-  { nav:'Départ', title:'Quand la nature bouge.', eyebrow:'Un voyage au cœur de notre planète', lead:'La Terre nous réserve de grandes surprises. Découvrons quatre phénomènes impressionnants !', words:['Le sol','La mer','Les volcans','Le ciel'], remember:'Une catastrophe naturelle, c’est un phénomène naturel qui provoque de gros dégâts.', label:'Notre planète en mouvement', status:['Quatre phénomènes à découvrir.'], duration:'30 secondes', script:'Bonjour ! Aujourd’hui, je vais vous parler des catastrophes naturelles. La nature peut parfois devenir très puissante et provoquer de gros dégâts. Nous allons découvrir les séismes, les tsunamis, les éruptions volcaniques et les tornades. Regardez les images : nous allons comprendre comment cela se passe !', gesture:'À faire : montrer les quatre dessins et annoncer les quatre noms.' },
-  { nav:'Séisme', title:'Le sol se met à trembler.', eyebrow:'01 / Sous nos pieds', lead:'En profondeur, des roches bloquées bougent tout à coup. La secousse se propage jusqu’à la surface.', words:['Roches','Secousse','Tremblement'], remember:'Un séisme est aussi appelé un tremblement de terre.', label:'Le séisme · vue en coupe', status:['Les roches sont bloquées.','Les roches glissent brusquement !','Les vibrations se propagent.','À la surface, le sol tremble.'], duration:'1 minute', script:'Un séisme, c’est un tremblement de terre. Sous nos pieds, des morceaux de roche peuvent rester bloqués. Puis ils bougent brusquement. Cela crée des vibrations qui se propagent dans la Terre. Regardez l’animation : les vibrations arrivent à la surface et le sol tremble ! Un fort séisme peut abîmer les routes et les bâtiments. Les scientifiques utilisent des appareils pour mesurer ces secousses.', gesture:'À faire : frotter doucement les paumes l’une contre l’autre, puis les faire glisser d’un coup. Montrer les vibrations sur le dessin.' },
-  { nav:'Tsunami', title:'Le tsunami arrive sur la plage !', eyebrow:'02 / Au bord de la mer', lead:'Parfois, la mer se retire d’abord et découvre du sable. Puis l’eau arrive avec force et inonde la plage.', words:['Retrait de la mer','Vague','Inondation'], remember:'La mer ne se retire pas avant tous les tsunamis. En cas d’alerte, on s’éloigne de la plage avec un adulte.', label:'Un tsunami sur une plage', status:['Une plage calme : la mer est au bord du sable.','La mer se retire : une grande bande de sable apparaît !','La vague arrive vers la plage et devient plus haute.','L’eau avance sur le sable et inonde la plage !'], stageTimes:[0,.16,.43,.76], snapshots:[0,.4,.67,1], stageLabels:['Plage calme','La mer se retire','La vague arrive','Plage inondée'], duration:'1 minute', script:'Un tsunami est une série de grandes vagues, souvent provoquées par un séisme sous la mer. Regardez cette plage. Dans cet exemple, la mer se retire et découvre beaucoup de sable. Puis une grande vague arrive : l’eau avance avec force et recouvre la plage ! Mais attention : la mer ne se retire pas avant tous les tsunamis. Si une alerte est donnée, on quitte la plage avec un adulte et on suit les consignes.', gesture:'À faire : montrer le sable qui apparaît, puis déplacer la main dans l’autre sens pour représenter l’eau qui envahit la plage.' },
-  { nav:'Volcan', title:'La roche chaude remonte.', eyebrow:'03 / À l’intérieur du volcan', lead:'Sous un volcan, il y a de la roche fondue : le magma. Quand il sort à la surface, on l’appelle la lave.', words:['Magma','Lave','Cendres'], remember:'Une éruption peut rejeter de la lave, des gaz et des cendres.', label:'L’éruption volcanique · vue en coupe', status:['Le magma est sous le volcan.','Le magma remonte vers la surface.','La lave sort ; des gaz et des cendres sont rejetés.','La lave s’écoule sur la pente.'], duration:'1 minute', script:'Un volcan est un endroit où de la roche très chaude peut sortir de la Terre. Sous le volcan, cette roche fondue s’appelle le magma. Quand le magma arrive à la surface, il s’appelle la lave. Regardez l’animation : le magma remonte, puis la lave sort et coule sur la pente. Le volcan peut aussi rejeter des gaz et des cendres. Certaines éruptions sont calmes, d’autres sont explosives.', gesture:'À faire : montrer le magma en bas, suivre sa remontée avec le doigt, puis montrer la lave sur la pente.' },
-  { nav:'Tornade', title:'L’air tourne très vite.', eyebrow:'04 / Dans le ciel', lead:'Pendant certains orages, une colonne d’air se met à tourner. Si elle touche le sol, c’est une tornade.', words:['Orage','Air','Tourbillon'], remember:'Une tornade relie un nuage d’orage au sol.', label:'La tornade · vue de côté', status:['Un gros nuage d’orage se forme.','L’air tourne sous le nuage.','Le tourbillon s’étire jusqu’au sol.','La tornade se déplace et soulève des débris.'], duration:'1 minute', script:'Une tornade est une colonne d’air qui tourne très vite. Elle peut se former pendant un gros orage. Le tourbillon relie le nuage au sol. Regardez : il s’allonge jusqu’à toucher la terre ! Une tornade peut se déplacer et soulever de la poussière, des branches et des objets. Elle peut aussi abîmer des maisons. Tous les orages ne produisent pas de tornade. C’est un phénomène différent d’un cyclone.', gesture:'À faire : dessiner des cercles avec le doigt, puis montrer le lien entre le nuage et le sol.' },
-  { nav:'À retenir', title:'Comprendre pour se protéger.', eyebrow:'La fin de notre exploration', lead:'La Terre, l’eau et l’air peuvent être très puissants. Les scientifiques les observent pour mieux nous protéger.', words:['Observer','Alerter','Écouter les consignes'], remember:'Quand une alerte est donnée, on écoute les adultes et les consignes des autorités.', label:'Quatre phénomènes, une planète', status:['Le sol tremble · la mer monte · la lave sort · l’air tourne.'], duration:'30 secondes', script:'Nous avons découvert quatre catastrophes naturelles. Dans un séisme, le sol tremble. Dans un tsunami, des vagues arrivent sur la côte. Pendant une éruption, le volcan rejette de la lave, des gaz ou des cendres. Dans une tornade, l’air tourne très vite. Les scientifiques observent ces phénomènes. Pour se protéger, il faut écouter les adultes et les consignes. Merci de m’avoir écouté !', gesture:'À faire : montrer chaque dessin et demander à la classe : « Quel phénomène fait trembler le sol ? »' }
+  {
+    "nav": "Départ",
+    "title": "Quand la nature bouge.",
+    "lead": "Découvrons les séismes, les tsunamis, les volcans et les tornades.",
+    "label": "Notre planète en mouvement",
+    "status": [
+      "Quatre phénomènes à découvrir."
+    ],
+    "duration": "20 secondes",
+    "script": "Bonjour ! Je vais vous présenter quatre catastrophes naturelles. Ce sont des phénomènes de la nature qui peuvent provoquer de gros dégâts."
+  },
+  {
+    "nav": "Séisme",
+    "title": "Les plaques font trembler le sol.",
+    "lead": "Les plaques de roche bougent lentement. Quand des roches glissent d’un coup, le sol tremble.",
+    "label": "Le séisme · vue en coupe",
+    "status": [
+      "Les roches sont bloquées.",
+      "Les roches glissent brusquement !",
+      "Les vibrations se propagent.",
+      "À la surface, le sol tremble."
+    ],
+    "duration": "45 secondes",
+    "script": "La surface de la Terre est faite de grandes plaques de roche. Elles bougent très lentement. Parfois, des roches se bloquent, puis glissent d’un coup. Cela fait trembler le sol : c’est un séisme. Regardez l’animation !",
+    "stageTimes": [
+      0,
+      0.2,
+      0.5,
+      0.7
+    ],
+    "snapshots": [
+      0,
+      0.35,
+      0.6,
+      0.85
+    ]
+  },
+  {
+    "nav": "Tsunami",
+    "title": "Le tsunami arrive sur la plage !",
+    "lead": "Un tsunami est une série de grandes vagues qui inondent la côte.",
+    "label": "Un tsunami sur une plage",
+    "status": [
+      "Une plage calme : la mer est au bord du sable.",
+      "La mer se retire : une grande bande de sable apparaît !",
+      "La vague arrive vers la plage et devient plus haute.",
+      "L’eau avance sur le sable et inonde la plage !"
+    ],
+    "stageTimes": [
+      0,
+      0.16,
+      0.43,
+      0.76
+    ],
+    "snapshots": [
+      0,
+      0.4,
+      0.67,
+      1
+    ],
+    "stageLabels": [
+      "Plage calme",
+      "La mer se retire",
+      "La vague arrive",
+      "Plage inondée"
+    ],
+    "duration": "45 secondes",
+    "script": "Un tsunami est une série de grandes vagues, souvent causées par un séisme sous la mer. Ici, la mer se retire, puis une vague inonde la plage. La mer ne se retire pas toujours. En cas d’alerte, on s’éloigne avec un adulte."
+  },
+  {
+    "nav": "Volcan",
+    "title": "La roche chaude remonte.",
+    "lead": "Sous la terre, la roche fondue s’appelle le magma. Quand elle sort, c’est la lave.",
+    "label": "L’éruption volcanique · vue en coupe",
+    "status": [
+      "Le magma est sous le volcan.",
+      "Le magma remonte vers la surface.",
+      "La lave sort ; des gaz et des cendres sont rejetés.",
+      "La lave s’écoule sur la pente."
+    ],
+    "duration": "45 secondes",
+    "script": "Sous un volcan, il y a de la roche fondue : le magma. Quand il sort, on l’appelle la lave. Le volcan peut aussi rejeter des gaz et des cendres. C’est une éruption !",
+    "stageLabels": [
+      "Magma en bas",
+      "Magma remonte",
+      "Éruption !",
+      "Lave qui coule"
+    ]
+  },
+  {
+    "nav": "Tornade",
+    "title": "L’air tourne très vite.",
+    "lead": "Une tornade est une colonne d’air qui tourne très vite entre un nuage et le sol.",
+    "label": "La tornade · vue de côté",
+    "status": [
+      "Un gros nuage d’orage se forme.",
+      "L’air tourne sous le nuage.",
+      "Le tourbillon s’étire jusqu’au sol.",
+      "La tornade se déplace et soulève des débris."
+    ],
+    "duration": "45 secondes",
+    "script": "Pendant certains orages, une colonne d’air tourne très vite et touche le sol : c’est une tornade. Elle peut emporter des objets et abîmer des maisons. Pour se protéger, on écoute les adultes et les consignes. Merci de m’avoir écouté !",
+    "stageLabels": [
+      "Gros orage",
+      "Air en rotation",
+      "Touche le sol",
+      "Se déplace"
+    ]
+  }
 ];
-slides[1].title='Les plaques font trembler le sol.';
-slides[1].eyebrow='01 / La tectonique des plaques';
-slides[1].words=['Plaques de roche','Mouvement lent','Secousse brusque'];
-slides[1].stageTimes=[0,.2,.5,.7];
-slides[1].snapshots=[0,.35,.6,.85];
-slides[1].script='La surface de la Terre est comme un puzzle de grandes plaques de roche. Elles bougent très lentement, de quelques centimètres par an. Elles peuvent s’écarter, coulisser ou se rapprocher. Quand une plaque plonge sous l’autre, c’est la subduction. Quand deux continents se heurtent, cela peut former des montagnes, sur des millions d’années. Parfois, les roches se bloquent. Puis elles cassent ou glissent brusquement : cela crée des vibrations. C’est un séisme !';
-slides[1].gesture='À faire : utiliser les deux mains comme des plaques. Les écarter, les faire coulisser, puis faire passer une main sous l’autre pour la subduction. Garder une minute pour cette partie de l’exposé.';
-slides[3].stageLabels=['Magma en bas','Magma remonte','Éruption !','Lave qui coule'];
-slides[4].stageLabels=['Gros orage','Air en rotation','Touche le sol','Se déplace'];

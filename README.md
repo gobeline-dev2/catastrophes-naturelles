@@ -10,9 +10,9 @@ Le tsunami se déroule sur une plage avec palmiers et parasol : retrait visible 
 
 ## Présenter
 
-Ouvrir la page, avancer avec les boutons ou les flèches du clavier, puis lancer l’animation de chaque phénomène. Le texte à dire et le geste suggéré se trouvent sous chaque étape.
+Ouvrir la page, avancer avec les boutons ou les flèches du clavier, puis lancer l’animation de chaque phénomène. Un court texte à dire se trouve sous chaque étape. Les mots-clés et les encadrés répétitifs ont été retirés pour alléger la lecture.
 
-Déroulé : introduction de 30 secondes, quatre étapes d’une minute, conclusion de 30 secondes. Les temps comprennent les animations et les pauses ; répéter avec un chronomètre.
+Déroulé : introduction de 20 secondes, puis quatre étapes d’environ 45 secondes, animations comprises. L’exposé se termine sur la tornade. Le texte oral compte environ 180 mots ; les pauses et les démonstrations permettent de rester dans les cinq minutes. Répéter avec un chronomètre.
 
 Les mouvements sont des schémas pédagogiques simplifiés. La préférence système de réduction des animations remplace la lecture animée par des étapes fixes.
 

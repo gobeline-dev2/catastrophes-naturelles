@@ -61,7 +61,7 @@ export function createModel(index,concept='comic',plateMode='subduction'){
   const labels=[];
   const label=(text,x,y,z)=>labels.push({text,point:new THREE.Vector3(x,y,z)});
   let update=()=>{};
-  if(index===0||index===5){
+  if(index===0){
     const globe=mesh(group,new THREE.IcosahedronGeometry(1.72,3),C.water,0,1.22,0);
     // Abstract land patches: a decorative globe, not a geographic map.
     const randomPatches=[[-.7,2.5,.6,.38],[-1.3,1.9,.55,.42],[-.95,1.42,1.1,.34],[.7,.5,1.18,.4],[1.2,1.05,.6,.33],[.35,2.75,.57,.26]];

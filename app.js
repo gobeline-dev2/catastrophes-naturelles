@@ -14,16 +14,14 @@ function draw(p=0){progress=clamp(p);viewer?.draw(progress);const s=activeSlide(
 function stop(){if(animation!==null)cancelAnimationFrame(animation);animation=null;paused=false;elapsed=0;stage=-1;$('pause').hidden=true;$('animate').disabled=!viewer||viewer.lost;}
 function render(index){
   stop();current=clamp(index,0,slides.length-1);const s=activeSlide();
-  $('slide-title').textContent=s.title;$('eyebrow').textContent=s.eyebrow;$('lead').textContent=s.lead;
-  $('keywords').replaceChildren(...s.words.map(word=>{const el=document.createElement('span');el.className='keyword';el.textContent=word;return el;}));
-  $('concept').innerHTML='<strong>À retenir</strong>';$('concept').append(document.createTextNode(s.remember));
+  $('slide-title').textContent=s.title;$('lead').textContent=s.lead;
   $('scene-label').textContent=s.label;$('scene').setAttribute('aria-label',s.lead);
-  $('script').textContent=s.script;$('gesture').textContent=s.gesture;
-  $('step-count').textContent=`Étape ${current+1} / 6`;$('duration').textContent=s.duration;
-  $('previous').disabled=current===0;$('next').disabled=current===5;$('next').textContent=current===4?'Pour finir →':'Suivant →';
-  $('animate').hidden=current===0||current===5;$('animate').textContent=reducedMotion.matches?'Voir les étapes →':'▶ Lancer l’animation';
+  $('script').textContent=s.script;
+  $('step-count').textContent=`Étape ${current+1} / ${slides.length}`;$('duration').textContent=s.duration;
+  $('previous').disabled=current===0;$('next').disabled=current===slides.length-1;$('next').textContent='Suivant →';
+  $('animate').hidden=current===0;$('animate').textContent=reducedMotion.matches?'Voir les étapes →':'▶ Lancer l’animation';
   document.querySelectorAll('.chapter').forEach((el,i)=>{el.classList.toggle('active',i===current);if(i===current)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
-  $('timeline').hidden=current===0||current===5;
+  $('timeline').hidden=current===0;
   const shortLabels=s.stageLabels||['Au début','Ça bouge','Le phénomène','À la fin'];
   $('stage-buttons').replaceChildren(...shortLabels.map((text,i)=>{const b=document.createElement('button');b.type='button';b.className='stage-button';b.textContent=text;b.setAttribute('aria-label',s.status[i]||text);b.addEventListener('click',()=>{stop();draw((s.snapshots||[0,.38,.66,1])[i]);});return b;}));
   $('plate-picker').hidden=current!==1;

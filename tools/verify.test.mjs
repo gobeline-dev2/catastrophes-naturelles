@@ -6,8 +6,8 @@ import { createModel, tsunamiState } from '../scenes.js';
 import { plateModes } from '../tectonics.js';
 import { slides } from '../content.js';
 
-test('All six scenes produce finite 3D geometry throughout their animation',()=>{
-  for(const concept of ['comic'])for(let index=0;index<6;index++){
+test('All presentation scenes produce finite 3D geometry throughout their animation',()=>{
+  for(const concept of ['comic'])for(let index=0;index<slides.length;index++){
     const model=createModel(index,concept);
     for(const p of [0,.13,.25,.38,.5,.65,.78,.9,1]){
       model.update(p);model.group.updateMatrixWorld(true);
@@ -45,8 +45,10 @@ test('Presentation navigation, notes, pause, resume and replay work together',()
   $('pause').click();assert.equal(app.hasPending(),false);assert.equal($('pause').textContent,'Reprendre');
   $('pause').click();app.advance(18000);assert.equal($('pause').hidden,true);assert.equal($('animate').disabled,false);
   $('animate').click();app.advance(21000);$('next').click();assert.equal(app.hasPending(),false);assert.match($('script').textContent,/tsunami/);
-  for(let i=0;i<3;i++)$('next').click();assert.equal($('next').disabled,true);assert.equal($('animate').hidden,true);
-  app.window.document.querySelector('.brand').click();assert.match($('step-count').textContent,/1 \/ 6/);app.close();
+  for(let i=0;i<2;i++)$('next').click();assert.equal($('next').disabled,true);assert.equal($('animate').hidden,false);
+  assert.equal(app.window.document.querySelectorAll('.chapter').length,5);assert.match($('script').textContent,/tornade/);assert.equal($('step-count').textContent,'Étape 5 / 5');
+  app.window.document.body.dispatchEvent(new app.window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));assert.equal($('step-count').textContent,'Étape 5 / 5');
+  app.window.document.querySelector('.brand').click();assert.match($('step-count').textContent,/1 \/ 5/);app.close();
 });
 test('Reduced motion uses four static steps without requesting animation frames',()=>{
   const app=mount(true);app.$('next').click();const states=new Set();
