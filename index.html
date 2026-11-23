@@ -7,7 +7,7 @@
   <meta name="description" content="Un exposé de cinq minutes pour découvrir les séismes, les tsunamis, les volcans et les tornades, avec des animations adaptées au CE1.">
   <title>Quand la nature bouge — Exposé CE1</title>
   <link rel="stylesheet" href="style.css?v=comic-controls-1">
-  <script src="app.js?v=plate-pauses-7" type="module"></script>
+  <script src="app.js?v=clean-text-8" type="module"></script>
 </head>
 <body data-concept="comic">
   <header class="header">
@@ -41,13 +41,11 @@
     </section>
     <section id="quiz" class="quiz quiz-page" aria-labelledby="quiz-title" hidden><h1 id="quiz-title">À toi de jouer !</h1><p>Trois questions et un bonus. Choisis A, B ou C.</p><div id="quiz-questions"></div><button type="button" class="button quiet" id="quiz-reset">Recommencer le quiz</button></section>
     <div class="bottom-bar">
-      <div class="chapter-progress"><span id="step-count"></span><span id="duration"></span></div>
       <div class="navigation"><button class="button quiet" id="previous" type="button">← Précédent</button><button class="button next" id="next" type="button">Suivant →</button></div>
     </div>
     <section class="speaker" aria-label="Aide pour l’exposé">
-      <details id="speaker-notes"><summary>Mon petit texte à dire</summary><div class="speaker-content"><p id="script"></p></div></details>
+      <details id="speaker-notes"><summary aria-label="Afficher ou masquer les notes"></summary><div class="speaker-content"><p id="script"></p></div></details>
     </section>
-    <footer><span>Observer. Comprendre. Se protéger.</span><details class="sources"><summary>Pour les parents & les enseignants</summary><div><p>Déroulé : 20 secondes d’introduction, puis environ 45 secondes par phénomène, animations comprises. Gardez le temps restant pour les pauses. Répétez une fois avec un chronomètre.</p><p>Les animations illustrent les mécanismes : les tailles, les vitesses et les mouvements sont simplifiés et amplifiés pour être visibles. Le tsunami représente le cas où la mer se retire avant l’arrivée des vagues ; ce retrait n’est pas systématique. Une seule arrivée de vague est illustrée, mais un tsunami est une série de vagues. Les consignes de protection dépendent du lieu ; en cas d’alerte, suivez celles des autorités.</p><p>Sources scientifiques : <a href="https://www.usgs.gov/faqs/what-earthquake-and-what-causes-them-happen" target="_blank" rel="noopener">USGS — séismes</a>, <a href="https://pubs.usgs.gov/gip/dynamic/understanding.html" target="_blank" rel="noopener">USGS — mouvements des plaques</a>, <a href="https://www.noaa.gov/jetstream/tsunamis/tsunami-inundation" target="_blank" rel="noopener">NOAA — retrait de la mer et inondation</a>, <a href="https://www.usgs.gov/educational-resources/natural-hazards-education" target="_blank" rel="noopener">USGS — volcans et risques naturels</a>, <a href="https://www.noaa.gov/education/resource-collections/weather-atmosphere/tornadoes" target="_blank" rel="noopener">NOAA — tornades</a>.</p></div></details></footer>
   </main>
 </body>
 </html>

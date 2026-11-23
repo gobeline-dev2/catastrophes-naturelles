@@ -72,14 +72,12 @@ function render(index){
   const isQuiz=current===slides.length;
   document.querySelector('.presentation').hidden=isQuiz;document.querySelector('.speaker').hidden=isQuiz;$('quiz').hidden=!isQuiz;
   $('previous').disabled=current===0;$('next').disabled=isQuiz;$('next').hidden=isQuiz;$('next').textContent=current===slides.length-1?'Quiz →':'Suivant →';
-  $('step-count').textContent=isQuiz?'Quiz':'Étape '+(current+1)+' / '+slides.length;
   document.querySelectorAll('.chapter').forEach((el,i)=>{el.classList.toggle('active',i===current);if(i===current)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
-  if(isQuiz){$('duration').textContent='3 questions + bonus';return;}
+  if(isQuiz)return;
   const s=activeSlide();
   setCoverTitle($('slide-title'),s.title);$('lead').textContent=s.lead;
   $('scene-label').textContent=s.label;$('scene').setAttribute('aria-label',s.lead);
   $('script').textContent=s.script;
-  $('step-count').textContent=`Étape ${current+1} / ${slides.length}`;$('duration').textContent=s.duration;
   $('animate').hidden=current===0;$('animate').textContent=reducedMotion.matches?'Voir les étapes →':'▶ Lancer l’animation';
   document.querySelectorAll('.chapter').forEach((el,i)=>{el.classList.toggle('active',i===current);if(i===current)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
   $('timeline').hidden=current===0;

@@ -46,9 +46,9 @@ test('Presentation navigation, notes, pause, resume and replay work together',()
   $('pause').click();app.advance(64000);assert.equal($('pause').hidden,true);assert.equal($('animate').disabled,false);
   $('animate').click();app.advance(67000);$('next').click();assert.equal(app.hasPending(),false);assert.match($('script').textContent,/tsunami/);
   for(let i=0;i<2;i++)$('next').click();assert.equal($('next').disabled,false);assert.equal($('animate').hidden,false);
-  assert.equal(app.window.document.querySelectorAll('.chapter').length,6);assert.match($('script').textContent,/tornade/);assert.equal($('step-count').textContent,'Étape 5 / 5');
-  app.window.document.body.dispatchEvent(new app.window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));assert.equal($('step-count').textContent,'Quiz');
-  app.window.document.querySelector('.brand').click();assert.match($('step-count').textContent,/1 \/ 5/);app.close();
+  assert.equal(app.window.document.querySelectorAll('.chapter').length,6);assert.match($('script').textContent,/tornade/);assert.equal($('quiz').hidden,true);
+  app.window.document.body.dispatchEvent(new app.window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));assert.equal($('quiz').hidden,false);
+  app.window.document.querySelector('.brand').click();assert.equal($('previous').disabled,true);app.close();
 });
 test('Reduced motion uses four static steps without requesting animation frames',()=>{
   const app=mount(true);app.$('next').click();const states=new Set();
