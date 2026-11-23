@@ -6,8 +6,12 @@ const $=id=>document.getElementById(id);
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
 const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
 const plateOrder=Object.keys(plateModes);
-const duration=()=>current===1?32000:16000;
-const plateSnapshots=[.21,.46,.71,.96];
+const plateMovementMs=8000,platePauseMs=10000;
+const plateSegmentMs=plateMovementMs+platePauseMs;
+const plateDuration=plateOrder.length*plateMovementMs+(plateOrder.length-1)*platePauseMs;
+const plateStarts=plateOrder.map((_,i)=>i*plateSegmentMs/plateDuration);
+const duration=()=>current===1?plateDuration:16000;
+const plateSnapshots=plateOrder.map((_,i)=>(i*plateSegmentMs+7000)/plateDuration);
 let current=0,animation=null,startTime=0,elapsed=0,paused=false,stage=-1,viewer=null,plateMode='subduction',progress=0;
 const activeSlide=()=>slides[current];
 try { viewer=new NatureRenderer($('scene'),$('scene-labels')); }
@@ -17,10 +21,12 @@ function draw(p=0){
   const s=activeSlide();
   let localProgress=progress,nextStage,status;
   if(current===1){
-    const segment=Math.min(3,Math.floor(progress*4));
+    const time=progress*plateDuration;
+    const segment=Math.min(plateOrder.length-1,Math.floor(time/plateSegmentMs));
+    const segmentTime=time-segment*plateSegmentMs;
     const mode=plateOrder[segment];
     // Each movement has a one-second still introduction and a one-second final hold.
-    localProgress=clamp((progress*4-segment-.125)/.75);
+    localProgress=clamp((segmentTime-1000)/6000);
     if(mode!==plateMode){plateMode=mode;viewer?.select(1,mode);}
     const info=plateModes[mode];
     setCoverTitle($('plate-name'),String(segment+1)+' / 4 · '+info.term);
@@ -30,6 +36,10 @@ function draw(p=0){
     nextStage=segment;
     const phase=Math.min(3,[0,.2,.5,.7].filter(t=>localProgress>=t).length-1);
     status=info.status[phase];
+    if(segment<plateOrder.length-1&&segmentTime>=plateMovementMs){
+      const remaining=Math.ceil((plateSegmentMs-segmentTime)/1000);
+      status='Pause · '+plateModes[plateOrder[segment+1]].term+' dans '+remaining+' s';
+    }
   }else{
     const thresholds=s.stageTimes||[0,.25,.5,.75];
     nextStage=Math.min(s.status.length-1,thresholds.filter(t=>progress>=t).length-1);
@@ -74,7 +84,7 @@ function render(index){
   document.querySelectorAll('.chapter').forEach((el,i)=>{el.classList.toggle('active',i===current);if(i===current)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
   $('timeline').hidden=current===0;
   const shortLabels=current===1?plateOrder.map(mode=>plateModes[mode].term):s.stageLabels||['Au début','Ça bouge','Le phénomène','À la fin'];
-  $('stage-buttons').replaceChildren(...shortLabels.map((text,i)=>{const b=document.createElement('button');b.type='button';b.className='stage-button';b.textContent=text;b.setAttribute('aria-label',current===1?text:s.status[i]||text);b.addEventListener('click',()=>playFrom((current===1?(reducedMotion.matches?plateSnapshots:[0,.25,.5,.75]):s.snapshots||[0,.38,.66,1])[i]));return b;}));
+  $('stage-buttons').replaceChildren(...shortLabels.map((text,i)=>{const b=document.createElement('button');b.type='button';b.className='stage-button';b.textContent=text;b.setAttribute('aria-label',current===1?text:s.status[i]||text);b.addEventListener('click',()=>playFrom((current===1?(reducedMotion.matches?plateSnapshots:plateStarts):s.snapshots||[0,.38,.66,1])[i]));return b;}));
   $('plate-sequence').hidden=current!==1;
   plateMode='subduction';
   viewer?.select(current,plateMode);draw();

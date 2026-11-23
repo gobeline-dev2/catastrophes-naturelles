@@ -43,8 +43,8 @@ test('Presentation navigation, notes, pause, resume and replay work together',()
   $('next').click();assert.match($('slide-title').textContent,/trembler/);assert.match($('script').textContent,/séisme/);
   $('animate').click();app.advance(4000);assert.equal($('pause').hidden,false);assert.ok(app.hasPending());
   $('pause').click();assert.equal(app.hasPending(),false);assert.equal($('pause').textContent,'▶ Reprendre');
-  $('pause').click();app.advance(34000);assert.equal($('pause').hidden,true);assert.equal($('animate').disabled,false);
-  $('animate').click();app.advance(37000);$('next').click();assert.equal(app.hasPending(),false);assert.match($('script').textContent,/tsunami/);
+  $('pause').click();app.advance(64000);assert.equal($('pause').hidden,true);assert.equal($('animate').disabled,false);
+  $('animate').click();app.advance(67000);$('next').click();assert.equal(app.hasPending(),false);assert.match($('script').textContent,/tsunami/);
   for(let i=0;i<2;i++)$('next').click();assert.equal($('next').disabled,false);assert.equal($('animate').hidden,false);
   assert.equal(app.window.document.querySelectorAll('.chapter').length,6);assert.match($('script').textContent,/tornade/);assert.equal($('step-count').textContent,'Étape 5 / 5');
   app.window.document.body.dispatchEvent(new app.window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));assert.equal($('step-count').textContent,'Quiz');
@@ -106,18 +106,18 @@ test('One playback visits all plate movements, supports pause, scrub and replay'
   $('animate').click();
   const modes=Object.keys(plateModes);
   for(let i=0;i<4;i++){
-    app.advance(i*8000);
+    app.advance(i*18000);
     assert.equal(app.window.viewer.mode,modes[i]);
     assert.match($('plate-name').textContent,new RegExp(plateModes[modes[i]].term));
     assert.equal(app.window.viewer.progress,0);
-    app.advance(i*8000+7500);assert.equal(app.window.viewer.progress,1);
+    app.advance(i*18000+7500);assert.equal(app.window.viewer.progress,1);
   }
-  app.advance(32000);assert.equal(app.hasPending(),false);assert.equal($('animate').disabled,false);
+  app.advance(62000);assert.equal(app.hasPending(),false);assert.equal($('animate').disabled,false);
   $('animate').click();assert.equal(app.window.viewer.mode,'subduction');assert.equal(app.window.viewer.progress,0);
-  app.advance(41000);assert.equal(app.window.viewer.mode,'divergence');
+  app.advance(81000);assert.equal(app.window.viewer.mode,'divergence');
   $('pause').click();assert.equal(app.hasPending(),false);$('pause').click();
-  app.advance(49000);assert.equal(app.window.viewer.mode,'sliding');
-  $('scrub').value=250;$('scrub').dispatchEvent(new app.window.Event('input'));
+  app.advance(99000);assert.equal(app.window.viewer.mode,'sliding');
+  $('scrub').value=300;$('scrub').dispatchEvent(new app.window.Event('input'));
   assert.equal(app.hasPending(),true);assert.equal(app.window.viewer.mode,'divergence');assert.equal(app.window.viewer.progress,0);
   $('scrub').value=1000;$('scrub').dispatchEvent(new app.window.Event('input'));
   assert.equal(app.window.viewer.mode,'collision');assert.equal(app.window.viewer.progress,1);
@@ -183,4 +183,28 @@ test('Ink detailing stays fixed while existing scene animation advances',()=>{
     }
     model.dispose();
   }
+});
+
+test('Plate movements hold for ten seconds between animations, with a pausable countdown',()=>{
+  const app=mount(),{$}=app; $('next').click();$('animate').click();
+  const modes=Object.keys(plateModes);
+  for(let i=0;i<3;i++){
+    const start=i*18000;
+    app.advance(start+8000);
+    assert.equal(app.window.viewer.mode,modes[i]);assert.equal(app.window.viewer.progress,1);
+    assert.match($('scene-status').textContent,/dans 10 s$/);
+    app.advance(start+17999);
+    assert.equal(app.window.viewer.mode,modes[i]);assert.equal(app.window.viewer.progress,1);
+    assert.match($('scene-status').textContent,/dans 1 s$/);
+    app.advance(start+18000);
+    assert.equal(app.window.viewer.mode,modes[i+1]);assert.equal(app.window.viewer.progress,0);
+  }
+  app.advance(62000);assert.equal(app.hasPending(),false);app.close();
+  const paused=mount();paused.$('next').click();paused.$('animate').click();paused.advance(10000);
+  const status=paused.$('scene-status').textContent;
+  paused.$('pause').click();paused.advance(30000);
+  assert.equal(paused.$('scene-status').textContent,status);
+  paused.$('pause').click();paused.advance(37999);
+  assert.equal(paused.window.viewer.mode,'subduction');
+  paused.advance(38000);assert.equal(paused.window.viewer.mode,'divergence');paused.close();
 });
