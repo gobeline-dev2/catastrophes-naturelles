@@ -7,7 +7,7 @@
   <meta name="description" content="Un exposé de cinq minutes pour découvrir les séismes, les tsunamis, les volcans et les tornades, avec des animations adaptées au CE1.">
   <title>Quand la nature bouge — Exposé CE1</title>
   <link rel="stylesheet" href="style.css?v=comic-controls-1">
-  <script src="app.js?v=clean-text-8" type="module"></script>
+  <script src="app.js?v=restored-notes-11" type="module"></script>
 </head>
 <body data-concept="comic">
   <header class="header">
@@ -25,7 +25,7 @@
         <div id="plate-sequence" class="plate-sequence" hidden aria-live="polite"><strong id="plate-name"></strong><span id="plate-description"></span></div>
         <div class="visual-top"><span id="scene-label"></span><span class="model-label">Schéma simplifié</span></div>
         <div class="animation-controls">
-          <button class="button quiet" id="fullscreen" type="button" aria-pressed="false">⛶ Plein écran</button>
+          <button class="button quiet" id="fullscreen" type="button" aria-pressed="false" hidden>⛶ Plein écran</button>
           <button class="button primary" id="animate" type="button">▶ Lancer l’animation</button>
           <button class="button primary pause-button" id="pause" type="button" hidden>⏸ Pause</button>
         </div>
@@ -44,7 +44,7 @@
       <div class="navigation"><button class="button quiet" id="previous" type="button">← Précédent</button><button class="button next" id="next" type="button">Suivant →</button></div>
     </div>
     <section class="speaker" aria-label="Aide pour l’exposé">
-      <details id="speaker-notes"><summary aria-label="Afficher ou masquer les notes"></summary><div class="speaker-content"><p id="script"></p></div></details>
+      <details id="speaker-notes"><summary>Explications</summary><div class="speaker-content"><p id="script"></p></div></details>
     </section>
   </main>
 </body>

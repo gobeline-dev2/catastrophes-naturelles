@@ -78,6 +78,7 @@ function render(index){
   setCoverTitle($('slide-title'),s.title);$('lead').textContent=s.lead;
   $('scene-label').textContent=s.label;$('scene').setAttribute('aria-label',s.lead);
   $('script').textContent=s.script;
+  $('fullscreen').hidden=current===0;
   $('animate').hidden=current===0;$('animate').textContent=reducedMotion.matches?'Voir les étapes →':'▶ Lancer l’animation';
   document.querySelectorAll('.chapter').forEach((el,i)=>{el.classList.toggle('active',i===current);if(i===current)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
   $('timeline').hidden=current===0;
