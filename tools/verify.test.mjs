@@ -8,7 +8,7 @@ import { slides } from '../content.js';
 
 test('All presentation scenes produce finite 3D geometry throughout their animation',()=>{
   for(const concept of ['comic'])for(let index=0;index<slides.length;index++){
-    const model=createModel(index,concept);
+    const model=createModel(slides[index].sceneIndex??index,concept);
     for(const p of [0,.13,.25,.38,.5,.65,.78,.9,1]){
       model.update(p);model.group.updateMatrixWorld(true);
       model.group.traverse(o=>{
@@ -46,7 +46,11 @@ test('Presentation navigation, notes, pause, resume and replay work together',()
   $('pause').click();app.advance(64000);assert.equal($('pause').hidden,true);assert.equal($('animate').disabled,false);
   $('animate').click();app.advance(67000);$('next').click();assert.equal(app.hasPending(),false);assert.match($('script').textContent,/tsunami/);
   for(let i=0;i<2;i++)$('next').click();assert.equal($('next').disabled,false);assert.equal($('animate').hidden,false);
-  assert.equal(app.window.document.querySelectorAll('.chapter').length,6);assert.match($('script').textContent,/tornade/);assert.equal($('quiz').hidden,true);
+  assert.equal(app.window.document.querySelectorAll('.chapter').length,7);assert.match($('script').textContent,/tornade/);assert.equal($('quiz').hidden,true);
+  $('next').click();assert.equal($('slide-title').textContent,'Conclusion');
+  assert.equal($('lead').textContent,'La nature est belle mais il existe des phénomènes qui nous dépassent et peuvent être dangereux');
+  assert.equal($('animate').hidden,true);assert.equal($('timeline').hidden,true);assert.equal($('fullscreen').hidden,true);
+  assert.equal(app.window.viewer.selected,0);assert.equal($('next').textContent,'Quiz →');
   app.window.document.body.dispatchEvent(new app.window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));assert.equal($('quiz').hidden,false);
   app.window.document.querySelector('.brand').click();assert.equal($('previous').disabled,true);app.close();
 });

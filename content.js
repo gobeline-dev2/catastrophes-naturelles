@@ -1,6 +1,7 @@
 export const slides = [
   {
-    "nav": "Départ",
+    "nav": "Introduction",
+    "static": true,
     "title": "Quand la nature bouge.",
     "lead": "Découvrons les séismes, les tsunamis, les volcans et les tornades.",
     "label": "Notre planète en mouvement",
@@ -107,5 +108,16 @@ export const slides = [
       "Touche le sol",
       "Se déplace"
     ]
+  },
+  {
+    "nav": "Conclusion",
+    "hideExplanations": true,
+    "title": "Conclusion",
+    "lead": "La nature est belle mais il existe des phénomènes qui nous dépassent et peuvent être dangereux",
+    "label": "Notre planète en mouvement",
+    "status": ["Merci de m’avoir écouté !"],
+    "script": "La nature est belle mais il existe des phénomènes qui nous dépassent et peuvent être dangereux",
+    "static": true,
+    "sceneIndex": 0
   }
 ];

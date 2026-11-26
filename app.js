@@ -54,7 +54,7 @@ function stop(){if(animation!==null)cancelAnimationFrame(animation);animation=nu
 function playFrom(position=0){
   if(current===slides.length)return;
   stop();draw(position);
-  if(reducedMotion.matches||!viewer||viewer.lost||current===0||progress>=1)return;
+  if(reducedMotion.matches||!viewer||viewer.lost||activeSlide().static||progress>=1)return;
   elapsed=progress*duration();startTime=performance.now()-elapsed;
   $('animate').disabled=true;$('pause').hidden=false;$('pause').textContent='⏸ Pause';
   animation=requestAnimationFrame(tick);
@@ -70,7 +70,7 @@ function setCoverTitle(element,label){
 function render(index){
   stop();current=clamp(index,0,slides.length);
   const isQuiz=current===slides.length;
-  document.querySelector('.presentation').hidden=isQuiz;document.querySelector('.speaker').hidden=isQuiz;$('quiz').hidden=!isQuiz;
+  document.querySelector('.presentation').hidden=isQuiz;document.querySelector('.speaker').hidden=isQuiz||!!activeSlide()?.hideExplanations;$('quiz').hidden=!isQuiz;
   $('previous').disabled=current===0;$('next').disabled=isQuiz;$('next').hidden=isQuiz;$('next').textContent=current===slides.length-1?'Quiz →':'Suivant →';
   document.querySelectorAll('.chapter').forEach((el,i)=>{el.classList.toggle('active',i===current);if(i===current)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
   if(isQuiz)return;
@@ -78,15 +78,15 @@ function render(index){
   setCoverTitle($('slide-title'),s.title);$('lead').textContent=s.lead;
   $('scene-label').textContent=s.label;$('scene').setAttribute('aria-label',s.lead);
   $('script').textContent=s.script;
-  $('fullscreen').hidden=current===0;
-  $('animate').hidden=current===0;$('animate').textContent=reducedMotion.matches?'Voir les étapes →':'▶ Lancer l’animation';
+  $('fullscreen').hidden=!!s.static;
+  $('animate').hidden=!!s.static;$('animate').textContent=reducedMotion.matches?'Voir les étapes →':'▶ Lancer l’animation';
   document.querySelectorAll('.chapter').forEach((el,i)=>{el.classList.toggle('active',i===current);if(i===current)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
-  $('timeline').hidden=current===0;
+  $('timeline').hidden=!!s.static;
   const shortLabels=current===1?plateOrder.map(mode=>plateModes[mode].term):s.stageLabels||['Au début','Ça bouge','Le phénomène','À la fin'];
   $('stage-buttons').replaceChildren(...shortLabels.map((text,i)=>{const b=document.createElement('button');b.type='button';b.className='stage-button';b.textContent=text;b.setAttribute('aria-label',current===1?text:s.status[i]||text);b.addEventListener('click',()=>playFrom((current===1?(reducedMotion.matches?plateSnapshots:plateStarts):s.snapshots||[0,.38,.66,1])[i]));return b;}));
   $('plate-sequence').hidden=current!==1;
   plateMode='subduction';
-  viewer?.select(current,plateMode);draw();
+  viewer?.select(s.sceneIndex??current,plateMode);draw();
 }
 function tick(now){elapsed=now-startTime;draw(clamp(elapsed/duration()));if(elapsed<duration()){animation=requestAnimationFrame(tick);}else{animation=null;$('pause').hidden=true;$('animate').disabled=!viewer||viewer.lost;$('animate').textContent='↻ Revoir l’animation';}}
 document.querySelector('.chapters').replaceChildren(...[...slides,{nav:"Quiz"}].map((s,i)=>{const b=document.createElement('button');b.type='button';b.className='chapter';b.innerHTML=`<span class="chapter-number">${String(i+1).padStart(2,'0')}</span>${s.nav}`;b.addEventListener('click',()=>render(i));return b;}));
